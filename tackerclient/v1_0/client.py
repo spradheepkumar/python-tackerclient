@@ -340,6 +340,10 @@ class Client(ClientBase):
     interface_attach_path = '/devices/%s/attach_interface'
     interface_detach_path = '/devices/%s/detach_interface'
 
+    # SFC additions
+    sfcs_path = '/sfcs'
+    sfc_patch = '/sfcs/%s'
+
     # API has no way to report plurals, so we have to hard code them
     # EXTED_PLURALS = {}
 
@@ -401,6 +405,10 @@ class Client(ClientBase):
     @APIParamsCall
     def detach_interface(self, device, body=None):
         return self.put(self.detach_interface_path % device, body)
+
+    @APIParamsCall
+    def request_chain(self, body=None):
+        return self.post(self.sfcs_path, body=body)
 
     # VNFD
     _DEVICE_TEMPLATE = "device_template"
@@ -486,3 +494,13 @@ class Client(ClientBase):
         body_ = {self._DEVICE: args_}
         ret = self.update_device(vnf, body_)
         return {self._VNF: ret[self._DEVICE]}
+
+    @APIParamsCall
+    def create_sfc(self, body=None):
+        self.vnf_chain = body
+        ret = self.request_chain(self.vnf_chain)
+        return {'sfc': ret}
+
+    @APIParamsCall
+    def delete_sfc(self, body=None):
+        pass
