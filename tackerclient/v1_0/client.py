@@ -413,6 +413,7 @@ class Client(ClientBase):
     # VNFD
     _DEVICE_TEMPLATE = "device_template"
     _VNFD = "vnfd"
+    _SFC = "sfc"
 
     @APIParamsCall
     def list_vnfds(self, retrieve_all=True, **_params):
@@ -497,8 +498,20 @@ class Client(ClientBase):
 
     @APIParamsCall
     def create_sfc(self, body=None):
-        self.vnf_chain = body
-        ret = self.request_chain(self.vnf_chain)
+        if body is not None:
+            args = body['sfc']
+            args_ = {
+                    'infra_driver': 'opendaylight',
+                    }
+            KEY_LIST = ('name', 'description')
+            args_.update(dict((key, args[key])
+                              for key in KEY_LIST if key in args))
+            if 'sfc' in args:
+                args_['attributes'] = {'sfc': args['sfc']}
+            body_ = {self._SFC: args_}
+        else:
+            body_ = None
+        ret = self.request_chain(body_)
         return {'sfc': ret}
 
     @APIParamsCall
