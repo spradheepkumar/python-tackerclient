@@ -506,8 +506,8 @@ class Client(ClientBase):
             KEY_LIST = ('name', 'description')
             args_.update(dict((key, args[key])
                               for key in KEY_LIST if key in args))
-            if 'sfc' in args:
-                args_['attributes'] = {'sfc': args['sfc']}
+            if args is not None:
+                args_['attributes'] = args
             body_ = {self._SFC: args_}
         else:
             body_ = None
