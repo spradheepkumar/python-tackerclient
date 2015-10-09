@@ -61,15 +61,22 @@ class CreateVNF(tackerV10.CreateCommand):
         parser.add_argument(
             '--config',
             help='specify config yaml file')
+        parser.add_argument(
+            '--param-file',
+            help='specify parameter yaml file'
+        )
 
     def args2body(self, parsed_args):
-        body = {self.resource: {}}
+        args = {'attributes': {}}
+        body = {self.resource: args}
+        # config arg passed as data overrides config yaml when both args passed
         if parsed_args.config_file:
             with open(parsed_args.config_file) as f:
                 config_yaml = f.read()
-            body[self.resource]['config'] = config_yaml
+            args['attributes']['config'] = config_yaml
         if parsed_args.config:
-            body[self.resource]['config'] = parsed_args.config
+            args['attributes']['config'] = parsed_args.config
+
         if parsed_args.vnfd_name:
             tacker_client = self.get_client()
             tacker_client.format = parsed_args.request_format
@@ -79,7 +86,10 @@ class CreateVNF(tackerV10.CreateCommand):
                 parsed_args.vnfd_name)
 
             parsed_args.vnfd_id = _id
-
+        if parsed_args.param_file:
+            with open(parsed_args.param_file) as f:
+                param_yaml = f.read()
+            args['attributes']['param_values'] = param_yaml
         tackerV10.update_dict(parsed_args, body[self.resource],
                               ['tenant_id', 'name', 'vnfd_id'])
         return body
@@ -100,12 +110,13 @@ class UpdateVNF(tackerV10.UpdateCommand):
 
     def args2body(self, parsed_args):
         body = {self.resource: {}}
+        # config arg passed as data overrides config yaml when both args passed
         if parsed_args.config_file:
             with open(parsed_args.config_file) as f:
                 config_yaml = f.read()
-            body[self.resource]['config'] = config_yaml
+            body[self.resource]['attributes'] = {'config': config_yaml}
         if parsed_args.config:
-            body[self.resource]['config'] = parsed_args.config
+            body[self.resource]['attributes'] = {'config': parsed_args.config}
         tackerV10.update_dict(parsed_args, body[self.resource], ['tenant_id'])
         return body
 
