@@ -344,6 +344,8 @@ class Client(ClientBase):
     vnfd_path = '/vnfds/%s'
     vnfs_path = '/vnfs'
     vnf_path = '/vnfs/%s'
+    sfc_path = '/sfcs/%s'
+    sfcs_path = '/sfcs'
 
     # API has no way to report plurals, so we have to hard code them
     # EXTED_PLURALS = {}
@@ -454,3 +456,25 @@ class Client(ClientBase):
     @APIParamsCall
     def update_vnf(self, vnf, body=None):
         return self.put(self.vnf_path % vnf, body=body)
+
+    _SFC = "sfc"
+
+    @APIParamsCall
+    def create_sfc(self, body=None):
+        return self.post(self.sfcs_path, body=body)
+
+    @APIParamsCall
+    def delete_sfc(self, sfc):
+        return self.delete(self.sfc_path % sfc)
+
+    @APIParamsCall
+    def list_sfcs(self, retrieve_all=True, **_params):
+        return self.list('sfcs', self.sfcs_path, retrieve_all, **_params)
+
+    @APIParamsCall
+    def show_sfc(self, sfc, **_params):
+        return self.get(self.sfc_path % sfc, params=_params)
+
+    @APIParamsCall
+    def update_sfc(self, sfc, body=None):
+        return self.put(self.sfc_path % sfc, body=body)
