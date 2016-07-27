@@ -342,6 +342,20 @@ class Client(ClientBase):
     vims_path = '/vims'
     vim_path = '/vims/%s'
 
+    vnffgds_path = '/vnffgds'
+    vnffgd_path = '/vnffgds/%s'
+    vnffgs_path = '/vnffgs'
+    vnffg_path = '/vnffgs/%s'
+
+    nfps_path = '/nfps'
+    nfp_path = '/nfps/%s'
+
+    sfcs_path = '/sfcs'
+    sfc_path = '/sfcs/%s'
+
+    fcs_path = '/classifiers'
+    fc_path = '/classifiers/%s'
+
     # API has no way to report plurals, so we have to hard code them
     # EXTED_PLURALS = {}
 
@@ -365,7 +379,7 @@ class Client(ClientBase):
                                **_params)
         for vnfd in vnfds_dict['vnfds']:
             if 'description' in vnfd.keys() and \
-                len(vnfd['description']) > DEFAULT_DESC_LENGTH:
+                    len(vnfd['description']) > DEFAULT_DESC_LENGTH:
                 vnfd['description'] = vnfd['description'][:DEFAULT_DESC_LENGTH]
                 vnfd['description'] += '...'
         return vnfds_dict
@@ -395,7 +409,7 @@ class Client(ClientBase):
         for vnf in vnfs['vnfs']:
             error_reason = vnf.get('error_reason', None)
             if error_reason and \
-                len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
+                    len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
                 vnf['error_reason'] = error_reason[
                     :DEFAULT_ERROR_REASON_LENGTH]
                 vnf['error_reason'] += '...'
@@ -438,3 +452,109 @@ class Client(ClientBase):
     @APIParamsCall
     def list_vims(self, retrieve_all=True, **_params):
         return self.list('vims', self.vims_path, retrieve_all, **_params)
+
+    _VNFFGD = "vnffgd"
+
+    @APIParamsCall
+    def list_vnffgds(self, retrieve_all=True, **_params):
+        vnffgds_dict = self.list(self._VNFFGD + 's',
+                                 self.vnffgds_path,
+                                 retrieve_all,
+                                 **_params)
+        for vnffgd in vnffgds_dict['vnffgds']:
+            if 'description' in vnffgd.keys() and \
+                    len(vnffgd['description']) > DEFAULT_DESC_LENGTH:
+                vnffgd['description'] = vnffgd['description'][
+                                        :DEFAULT_DESC_LENGTH]
+                vnffgd['description'] += '...'
+        return vnffgds_dict
+
+    @APIParamsCall
+    def show_vnffgd(self, vnffgd, **_params):
+        return self.get(self.vnffgd_path % vnffgd,
+                        params=_params)
+
+    @APIParamsCall
+    def create_vnffgd(self, body=None):
+        return self.post(self.vnffgds_path, body)
+
+    @APIParamsCall
+    def delete_vnffgd(self, vnffgd):
+        return self.delete(self.vnffgd_path % vnffgd)
+
+    @APIParamsCall
+    def list_vnffgs(self, retrieve_all=True, **_params):
+        vnffgs = self.list('vnffgs', self.vnffgs_path, retrieve_all, **_params)
+        for vnffg in vnffgs['vnffgs']:
+            error_reason = vnffg.get('error_reason', None)
+            if error_reason and \
+                    len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
+                vnffg['error_reason'] = error_reason[
+                    :DEFAULT_ERROR_REASON_LENGTH]
+                vnffg['error_reason'] += '...'
+        return vnffgs
+
+    @APIParamsCall
+    def show_vnffg(self, vnffg, **_params):
+        return self.get(self.vnffg_path % vnffg, params=_params)
+
+    @APIParamsCall
+    def create_vnffg(self, body=None):
+        return self.post(self.vnffgs_path, body=body)
+
+    @APIParamsCall
+    def delete_vnffg(self, vnffg):
+        return self.delete(self.vnffg_path % vnffg)
+
+    @APIParamsCall
+    def update_vnffg(self, vnffg, body=None):
+        return self.put(self.vnffg_path % vnffg, body=body)
+
+    @APIParamsCall
+    def list_sfcs(self, retrieve_all=True, **_params):
+        sfcs = self.list('sfcs', self.sfcs_path, retrieve_all, **_params)
+        for chain in sfcs['sfcs']:
+            error_reason = chain.get('error_reason', None)
+            if error_reason and \
+                    len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
+                chain['error_reason'] = error_reason[
+                    :DEFAULT_ERROR_REASON_LENGTH]
+                chain['error_reason'] += '...'
+        return sfcs
+
+    @APIParamsCall
+    def show_sfc(self, chain, **_params):
+        return self.get(self.sfc_path % chain, params=_params)
+
+    @APIParamsCall
+    def list_nfps(self, retrieve_all=True, **_params):
+        nfps = self.list('nfps', self.nfps_path, retrieve_all, **_params)
+        for nfp in nfps['nfps']:
+            error_reason = nfp.get('error_reason', None)
+            if error_reason and \
+                    len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
+                nfp['error_reason'] = error_reason[
+                    :DEFAULT_ERROR_REASON_LENGTH]
+                nfp['error_reason'] += '...'
+        return nfps
+
+    @APIParamsCall
+    def show_nfp(self, nfp, **_params):
+        return self.get(self.nfp_path % nfp, params=_params)
+
+    @APIParamsCall
+    def list_classifiers(self, retrieve_all=True, **_params):
+        classifiers = self.list('classifiers', self.fcs_path, retrieve_all,
+                                **_params)
+        for classifier in classifiers['classifiers']:
+            error_reason = classifier.get('error_reason', None)
+            if error_reason and \
+                    len(error_reason) > DEFAULT_ERROR_REASON_LENGTH:
+                classifier['error_reason'] = error_reason[
+                    :DEFAULT_ERROR_REASON_LENGTH]
+                classifier['error_reason'] += '...'
+        return classifiers
+
+    @APIParamsCall
+    def show_classifier(self, classifier, **_params):
+        return self.get(self.fc_path % classifier, params=_params)
