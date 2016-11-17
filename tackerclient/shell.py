@@ -31,7 +31,14 @@ import sys
 from keystoneclient.auth.identity import v2 as v2_auth
 from keystoneclient.auth.identity import v3 as v3_auth
 from keystoneclient import discover
-from keystoneclient.openstack.common.apiclient import exceptions as ks_exc
+
+try:
+    # try to use deprecated import (keystoneclient < 2.3.1)
+    from keystoneclient.openstack.common.apiclient import exceptions as ks_exc
+except ImportError:
+    # use import compatible with latest version (keystoneclient > 3.0.0)
+    from keystoneclient import exceptions as ks_exc
+
 from keystoneclient import session
 from oslo_utils import encodeutils
 import six.moves.urllib.parse as urlparse
@@ -583,8 +590,8 @@ class TackerShell(app.App):
                                      self.options.os_project_domain_id)) or
                                 self.options.os_project_id)
 
-                if (not self.options.os_username
-                        and not self.options.os_user_id):
+                if (not self.options.os_username and
+                   not self.options.os_user_id):
                     raise exc.CommandError(
                         _("You must provide a username or user ID via"
                           "  --os-username, env[OS_USERNAME] or"
